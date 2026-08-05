@@ -4705,7 +4705,7 @@ a.request__button {
     justify-content: space-between;
     width: 30px;
     height: 22px;
-    background: #1a1a1a;
+    background: transparent;
     border: none;
     cursor: pointer;
     padding: 0;
@@ -5149,7 +5149,7 @@ a.request__button {
     justify-content: space-between;
     width: 30px;
     height: 22px;
-    background: #1a1a1a;
+    background: transparent;
     border: none;
     cursor: pointer;
     padding: 0;
