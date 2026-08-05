@@ -406,6 +406,18 @@
       <p class="exit-intent-modal__description">
         Оставьте заявку в течение следующих <strong>10 минут</strong> и получите скидку на перетяжку или ремонт мебели. Предложение действительно только сегодня!
       </p>
+      <div class="exit-intent-modal__countdown-wrap">
+          <span class="exit-intent-modal__countdown-label">До конца предложения</span>
+          <div class="exit-intent-modal__countdown" id="exitIntentCountdown">
+              <div class="exit-intent-modal__countdown-box">
+                  <span class="exit-intent-modal__countdown-num" data-ei-min>10</span>
+              </div>
+              <span class="exit-intent-modal__countdown-sep">:</span>
+              <div class="exit-intent-modal__countdown-box">
+                  <span class="exit-intent-modal__countdown-num" data-ei-sec>00</span>
+              </div>
+          </div>
+      </div>
       <form class="exit-intent-modal__form" id="exitIntentForm" action="https://formspree.io/f/xvgvojvw" method="POST">
         <input type="hidden" name="service" value="Заявка со скидкой 5% (Exit Intent)">
         <input type="text" name="name" class="exit-intent-modal__input" placeholder="Ваше имя *" required>

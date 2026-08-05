@@ -5860,6 +5860,60 @@ a.request__button {
   font-weight: 600;
 }
 
+.exit-intent-modal__countdown-wrap {
+  margin-bottom: 20px;
+}
+
+.exit-intent-modal__countdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.exit-intent-modal__countdown-label {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 10px;
+}
+
+.exit-intent-modal__countdown-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 64px;
+  padding: 10px 6px;
+  background: rgba(255, 140, 0, 0.1);
+  border: 1px solid rgba(255, 140, 0, 0.35);
+  border-radius: 12px;
+  box-shadow: inset 0 0 18px rgba(255, 140, 0, 0.08);
+}
+
+.exit-intent-modal__countdown-num {
+  font-size: clamp(28px, 7vw, 40px);
+  font-weight: 900;
+  line-height: 1;
+  color: #7fff3f;
+  text-shadow: 0 0 14px rgba(127, 255, 63, 0.45);
+  font-variant-numeric: tabular-nums;
+}
+
+.exit-intent-modal__countdown-sep {
+  font-size: clamp(24px, 6vw, 34px);
+  font-weight: 900;
+  color: #ff8c00;
+  line-height: 1;
+  animation: countdownBlink 1s steps(1) infinite;
+}
+
+@keyframes countdownBlink {
+  50% { opacity: 0.25; }
+}
+
 .exit-intent-modal__form {
   display: flex;
   flex-direction: column;
@@ -5894,6 +5948,7 @@ a.request__button {
   color: white;
   border: none;
   padding: 14px 30px;
+  font-family: "Montserrat", sans-serif;
   font-size: clamp(15px, 3vw, 17px);
   font-weight: 700;
   border-radius: 50px;
@@ -5955,8 +6010,39 @@ a.request__button {
 
 .exit-intent-modal__timer span {
   font-size: 14px;
-  color: #ffa500;
   font-weight: 600;
+  background: linear-gradient(
+    100deg,
+    #ffa500 0%,
+    #ffa500 40%,
+    #fff6e0 50%,
+    #ffa500 60%,
+    #ffa500 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: timerShine 2.8s linear infinite;
+}
+
+@keyframes timerShine {
+  0% {
+    background-position: 150% 0;
+  }
+  100% {
+    background-position: -50% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exit-intent-modal__timer span {
+    animation: none;
+    background: none;
+    -webkit-text-fill-color: #ffa500;
+    color: #ffa500;
+  }
 }
 
 /* Адаптив для мобильных */

@@ -364,6 +364,36 @@ function initExitIntent() {
   let hasShown = sessionStorage.getItem('exitIntentShown') === 'true';
   let removeTrapFocus = null;
 
+  // --- Таймер обратного отсчёта (10 минут от момента открытия) ---
+  const COUNTDOWN_SECONDS = 10 * 60;
+  const minEl = exitIntentModal.querySelector('[data-ei-min]');
+  const secEl = exitIntentModal.querySelector('[data-ei-sec]');
+  let countdownInterval = null;
+
+  const renderCountdown = (remaining) => {
+    if (!minEl || !secEl) return;
+    const safe = Math.max(0, remaining);
+    const mm = Math.floor(safe / 60);
+    const ss = safe % 60;
+    minEl.textContent = String(mm).padStart(2, '0');
+    secEl.textContent = String(ss).padStart(2, '0');
+  };
+
+  const startCountdown = () => {
+    if (countdownInterval || (!minEl && !secEl)) return;
+    const endTime = Date.now() + COUNTDOWN_SECONDS * 1000;
+    renderCountdown(COUNTDOWN_SECONDS);
+    countdownInterval = setInterval(() => {
+      const remaining = Math.round((endTime - Date.now()) / 1000);
+      renderCountdown(remaining);
+      if (remaining <= 0) {
+        // Замораживаем на 00:00
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+      }
+    }, 1000);
+  };
+
   // Функция открытия модального окна
   const openExitIntentModal = () => {
     if (hasShown) return; // Не показываем, если уже показывали
@@ -372,6 +402,7 @@ function initExitIntent() {
     document.body.style.overflow = 'hidden';
     hasShown = true;
     sessionStorage.setItem('exitIntentShown', 'true');
+    startCountdown();
 
     // Активируем trap focus
     const modalContent = exitIntentModal.querySelector('.exit-intent-modal__content');
