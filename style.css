@@ -124,7 +124,7 @@ a.request__button {
   left: 0;
   width: 100%;
   z-index: 1000;
-  background-color: #333;
+  background-color: #1a1a1a;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
   /* Фиксация для мобильных устройств */
   -webkit-transform: translateZ(0);
@@ -137,7 +137,7 @@ a.request__button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #333;
+  background-color: #1a1a1a;
   padding: 0 30px;
   width: 100%;
 }
@@ -4900,6 +4900,13 @@ a.request__button {
   }
 
   .header__logo-img {
+    display: none;
+  }
+
+  /* Часть страниц оборачивает логотип в <a href="/">. Скрываем и обёртку,
+     иначе пустая ссылка остаётся flex-элементом и сдвигает текст шапки на gap.
+     Так раскладка шапки одинакова на всех страницах. */
+  .header__logo > a {
     display: none;
   }
 
