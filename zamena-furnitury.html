@@ -1104,27 +1104,35 @@
     </div>
   </div>
 
-  <!-- Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9Q6F5B1VV9"></script>
+<!-- Аналитика с отложенной загрузкой (после взаимодействия или 4с) -->
   <script>
+  (function () {
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-9Q6F5B1VV9');
-  </script>
-
-  <!-- Yandex.Metrika -->
-  <script type="text/javascript">
-    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-    m[i].l=1*new Date();k=e.createElement(t);a=e.getElementsByTagName(t)[0];
-    k.async=1;k.src=r;a.parentNode.insertBefore(k,a)})
-    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js?id=104935828", "ym");
-    ym(104935828, "init", {
-      clickmap:true,
-      trackLinks:true,
-      accurateTrackBounce:true,
-      webvisor:true
-    });
+      window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+      window.ym = window.ym || function () { (window.ym.a = window.ym.a || []).push(arguments); };
+      window.ym.l = 1 * new Date();
+      var loaded = false;
+      function loadAnalytics() {
+          if (loaded) return;
+          loaded = true;
+          var ga = document.createElement('script');
+          ga.async = true;
+          ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-9Q6F5B1VV9';
+          document.head.appendChild(ga);
+          gtag('js', new Date());
+          gtag('config', 'G-9Q6F5B1VV9');
+          var ym_s = document.createElement('script');
+          ym_s.async = true;
+          ym_s.src = 'https://mc.yandex.ru/metrika/tag.js';
+          document.head.appendChild(ym_s);
+          ym(104935828, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: true });
+          events.forEach(function (ev) { window.removeEventListener(ev, loadAnalytics, opts); });
+      }
+      var events = ['scroll', 'pointerdown', 'keydown', 'touchstart', 'mousemove'];
+      var opts = { once: true, passive: true };
+      events.forEach(function (ev) { window.addEventListener(ev, loadAnalytics, opts); });
+      setTimeout(loadAnalytics, 4000);
+  })();
   </script>
   <noscript>
     <div>
