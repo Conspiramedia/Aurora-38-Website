@@ -60,32 +60,59 @@
 
 <IfModule mod_expires.c>
     ExpiresActive On
-    
-    # Изображения кешируются на 1 год
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-    ExpiresByType image/x-icon "access plus 1 year"
-    
-    # CSS и JavaScript кешируются на 1 месяц
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType text/javascript "access plus 1 month"
-    
-    # Шрифты кешируются на 1 год
-    ExpiresByType font/woff2 "access plus 1 year"
-    ExpiresByType font/woff "access plus 1 year"
-    ExpiresByType font/ttf "access plus 1 year"
-    ExpiresByType application/font-woff2 "access plus 1 year"
-    
-    # HTML не кешируется (или на 1 час)
-    ExpiresByType text/html "access plus 1 hour"
-    
-    # Манифест и другие файлы на 1 неделю
+    ExpiresDefault                          "access plus 1 month"
+
+    # Изображения — 1 год
+    ExpiresByType image/jpeg                "access plus 1 year"
+    ExpiresByType image/gif                 "access plus 1 year"
+    ExpiresByType image/png                 "access plus 1 year"
+    ExpiresByType image/webp                "access plus 1 year"
+    ExpiresByType image/avif                "access plus 1 year"
+    ExpiresByType image/svg+xml             "access plus 1 year"
+    ExpiresByType image/x-icon              "access plus 1 year"
+    ExpiresByType image/vnd.microsoft.icon  "access plus 1 year"
+
+    # Шрифты — 1 год
+    ExpiresByType font/woff2                "access plus 1 year"
+    ExpiresByType font/woff                 "access plus 1 year"
+    ExpiresByType font/ttf                  "access plus 1 year"
+    ExpiresByType application/font-woff2    "access plus 1 year"
+
+    # CSS и JS — 1 год (файлы меняются редко; при обновлении меняйте имя или ?v=)
+    ExpiresByType text/css                  "access plus 1 year"
+    ExpiresByType application/javascript    "access plus 1 year"
+    ExpiresByType text/javascript           "access plus 1 year"
+
+    # Манифест — 1 неделя
     ExpiresByType application/manifest+json "access plus 1 week"
+
+    # HTML — не кешировать надолго (1 час)
+    ExpiresByType text/html                 "access plus 1 hour"
+</IfModule>
+
+<IfModule mod_headers.c>
+    # Явный Cache-Control с immutable для статики (Lighthouse доверяет этому больше Expires).
+    # immutable = браузер не перепроверяет файл в течение срока жизни — мгновенная отдача из кэша.
+
+    # Изображения, шрифты — 1 год, immutable
+    <FilesMatch "\.(?:jpe?g|png|gif|webp|avif|svg|ico|woff2?|ttf|otf|eot)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    # CSS и JS — 1 год, immutable
+    <FilesMatch "\.(?:css|js|mjs)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    # HTML — короткий кэш, всегда перепроверять (чтобы правки страниц долетали быстро)
+    <FilesMatch "\.(?:html|htm)$">
+        Header set Cache-Control "public, max-age=0, must-revalidate"
+    </FilesMatch>
+
+    # Манифест — 1 неделя
+    <FilesMatch "\.webmanifest$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
 </IfModule>
 
 # ========================================
