@@ -24,7 +24,6 @@ node_modules/
 *.bak
 fonts/_original_backup/
 AGENTS.md
-.htaccess
 
 # Документация для разработки (не нужна на продакшене)
 READY_TO_DEPLOY.txt
