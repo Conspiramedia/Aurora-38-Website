@@ -718,6 +718,189 @@ function showErrorModal(message) {
 }
 
 // =============================================================================
+// ПРИКРЕПЛЕНИЕ ФОТО К ФОРМЕ ЗАЯВКИ
+// =============================================================================
+
+// Максимальное количество фото и параметры сжатия
+const PHOTO_MAX_COUNT = 5;
+const PHOTO_MAX_DIMENSION = 1600; // px по большей стороне
+const PHOTO_JPEG_QUALITY = 0.8;
+
+// Сжимает изображение через canvas и возвращает File (JPEG)
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    // Не-изображения (на всякий случай) отдаём как есть
+    if (!file.type || file.type.indexOf('image/') !== 0) {
+      resolve(file);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+
+        // Пропорционально уменьшаем до PHOTO_MAX_DIMENSION по большей стороне
+        if (width > PHOTO_MAX_DIMENSION || height > PHOTO_MAX_DIMENSION) {
+          if (width >= height) {
+            height = Math.round((height * PHOTO_MAX_DIMENSION) / width);
+            width = PHOTO_MAX_DIMENSION;
+          } else {
+            width = Math.round((width * PHOTO_MAX_DIMENSION) / height);
+            height = PHOTO_MAX_DIMENSION;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              resolve(file); // fallback — оригинал
+              return;
+            }
+            const newName = (file.name || 'photo').replace(/\.[^.]+$/, '') + '.jpg';
+            const compressedFile = new File([blob], newName, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            });
+            resolve(compressedFile);
+          },
+          'image/jpeg',
+          PHOTO_JPEG_QUALITY
+        );
+      };
+      img.onerror = () => reject(new Error('Не удалось загрузить изображение'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Не удалось прочитать файл'));
+    reader.readAsDataURL(file);
+  });
+}
+
+// Встраивает в форму кнопку "Добавить фото", скрытый input и превью
+function injectPhotoUpload(form) {
+  // Защита от повторной инициализации
+  if (form.querySelector('.request__photo')) return;
+
+  const submitButton = form.querySelector('button[type="submit"]');
+  if (!submitButton) return;
+
+  // Список выбранных файлов храним прямо на форме
+  form._photoFiles = [];
+
+  // Контейнер блока фото
+  const wrap = document.createElement('div');
+  wrap.className = 'request__photo';
+
+  // Скрытый input для выбора файлов
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.multiple = true;
+  input.className = 'request__photo-input';
+  input.setAttribute('aria-hidden', 'true');
+  input.tabIndex = -1;
+
+  // Видимая кнопка
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'request__photo-btn';
+  btn.innerHTML = '<span class="request__photo-icon" aria-hidden="true">📷</span> Добавить фото';
+
+  // Подсказка о количестве
+  const hint = document.createElement('span');
+  hint.className = 'request__photo-hint';
+  hint.textContent = `Добавить можно до ${PHOTO_MAX_COUNT} фото`;
+
+  // Контейнер превью
+  const preview = document.createElement('div');
+  preview.className = 'request__photo-preview';
+
+  wrap.appendChild(input);
+  wrap.appendChild(btn);
+  wrap.appendChild(hint);
+  wrap.appendChild(preview);
+
+  // Вставляем блок фото перед кнопкой отправки
+  form.insertBefore(wrap, submitButton);
+
+  // Перерисовка списка превью
+  const renderPreview = () => {
+    preview.innerHTML = '';
+    form._photoFiles.forEach((file, index) => {
+      const item = document.createElement('div');
+      item.className = 'request__photo-item';
+
+      const thumb = document.createElement('img');
+      thumb.className = 'request__photo-thumb';
+      thumb.alt = 'Превью фото';
+      const objUrl = URL.createObjectURL(file);
+      thumb.src = objUrl;
+      // Освобождаем память после загрузки
+      thumb.onload = () => URL.revokeObjectURL(objUrl);
+
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'request__photo-remove';
+      remove.setAttribute('aria-label', 'Удалить фото');
+      remove.innerHTML = '&times;';
+      remove.addEventListener('click', () => {
+        form._photoFiles.splice(index, 1);
+        renderPreview();
+        updateHint();
+      });
+
+      item.appendChild(thumb);
+      item.appendChild(remove);
+      preview.appendChild(item);
+    });
+  };
+
+  const updateHint = () => {
+    const count = form._photoFiles.length;
+    if (count === 0) {
+      hint.textContent = `Добавить можно до ${PHOTO_MAX_COUNT} фото`;
+    } else if (count >= PHOTO_MAX_COUNT) {
+      hint.textContent = `Добавлено ${count} — это максимум`;
+    } else {
+      hint.textContent = `Добавлено ${count} из ${PHOTO_MAX_COUNT}`;
+    }
+  };
+
+  // Клик по кнопке открывает выбор файла
+  btn.addEventListener('click', () => input.click());
+
+  // Обработка выбора файлов
+  input.addEventListener('change', () => {
+    const selected = Array.from(input.files || []);
+    selected.forEach((file) => {
+      if (form._photoFiles.length >= PHOTO_MAX_COUNT) return;
+      // Берём только изображения
+      if (file.type && file.type.indexOf('image/') === 0) {
+        form._photoFiles.push(file);
+      }
+    });
+    // Сбрасываем значение, чтобы можно было выбрать те же файлы снова
+    input.value = '';
+    renderPreview();
+    updateHint();
+  });
+
+  // Функция сброса (вызывается после успешной отправки)
+  form._resetPhotos = () => {
+    form._photoFiles = [];
+    renderPreview();
+    updateHint();
+  };
+}
+
+// =============================================================================
 // МОДАЛЬНОЕ ОКНО УСПЕШНОЙ ОТПРАВКИ ФОРМЫ
 // =============================================================================
 
@@ -728,6 +911,20 @@ function initSuccessModal() {
   const forms = document.querySelectorAll('form');
 
   if (!successModal) return;
+
+  // Добавляем возможность прикрепить фото в основную форму заявки
+  const requestForm = document.getElementById('requestForm');
+  if (requestForm) {
+    injectPhotoUpload(requestForm);
+  }
+
+  // Добавляем возможность прикрепить фото в формы услуг (serviceForm1-8)
+  for (let i = 1; i <= 8; i++) {
+    const serviceForm = document.getElementById(`serviceForm${i}`);
+    if (serviceForm) {
+      injectPhotoUpload(serviceForm);
+    }
+  }
 
   // Переменная для хранения функции удаления trap focus
   let removeSuccessTrapFocus = null;
@@ -822,6 +1019,22 @@ function initSuccessModal() {
       const formData = new FormData(form);
       const action = form.getAttribute('action');
 
+      // Добавляем прикреплённые фото (если форма поддерживает загрузку фото)
+      if (form._photoFiles && form._photoFiles.length > 0) {
+        try {
+          for (let i = 0; i < form._photoFiles.length; i++) {
+            const compressed = await compressImage(form._photoFiles[i]);
+            formData.append('photo', compressed, compressed.name);
+          }
+        } catch (err) {
+          console.error('Ошибка обработки фото:', err);
+          // Если сжатие не удалось — отправляем оригиналы
+          for (let i = 0; i < form._photoFiles.length; i++) {
+            formData.append('photo', form._photoFiles[i], form._photoFiles[i].name);
+          }
+        }
+      }
+
       try {
         const response = await fetch(action, {
           method: 'POST',
@@ -834,6 +1047,11 @@ function initSuccessModal() {
         if (response.ok) {
           // Успешная отправка - показываем модальное окно
           form.reset();
+
+          // Сбрасываем прикреплённые фото, если они были
+          if (typeof form._resetPhotos === 'function') {
+            form._resetPhotos();
+          }
 
           // Отправка целей в Яндекс.Метрику
           if (typeof ym !== 'undefined') {
