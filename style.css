@@ -35,6 +35,13 @@ body {
   background-color: #1a1a1a;
 }
 
+/* Блокировка прокрутки сайта при открытом модальном окне */
+html.modal-open,
+body.modal-open {
+  overflow: hidden !important;
+  touch-action: none;
+}
+
 h1,
 h2,
 h3,

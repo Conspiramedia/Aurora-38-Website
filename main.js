@@ -117,14 +117,14 @@ function initGallery() {
       modalImg.onload = () => {
         imageModal.style.display = 'block';
         updateCounter();
-        document.body.style.overflow = 'hidden';
+        document.documentElement.classList.add('modal-open'); document.body.classList.add('modal-open');
       };
       
       // Если изображение уже загружено (из кеша)
       if (modalImg.complete) {
         imageModal.style.display = 'block';
         updateCounter();
-        document.body.style.overflow = 'hidden';
+        document.documentElement.classList.add('modal-open'); document.body.classList.add('modal-open');
       }
     });
   });
@@ -139,7 +139,7 @@ function initGallery() {
   // Закрытие модального окна
   const closeModal = () => {
     imageModal.style.display = 'none';
-    document.body.style.overflow = '';
+    document.documentElement.classList.remove('modal-open'); document.body.classList.remove('modal-open');
   };
 
   // Обработчики событий
@@ -239,7 +239,7 @@ function initCallModal() {
   
   const openCallModal = () => {
     callModal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
+    document.documentElement.classList.add('modal-open'); document.body.classList.add('modal-open');
     
     // Активируем trap focus
     const modalContent = callModal.querySelector('.modal__content');
@@ -256,7 +256,7 @@ function initCallModal() {
 
   const closeCallModal = () => {
     callModal.style.display = 'none';
-    document.body.style.overflow = '';
+    document.documentElement.classList.remove('modal-open'); document.body.classList.remove('modal-open');
     
     // Удаляем trap focus при закрытии
     if (removeCallTrapFocus) {
@@ -306,7 +306,7 @@ function initServiceModals() {
     
     const openModal = () => {
       modal.style.display = 'block';
-      document.body.style.overflow = 'hidden';
+      document.documentElement.classList.add('modal-open'); document.body.classList.add('modal-open');
       
       // Активируем trap focus
       const modalContent = modal.querySelector('.modal__content');
@@ -323,7 +323,7 @@ function initServiceModals() {
 
     const closeModal = () => {
       modal.style.display = 'none';
-      document.body.style.overflow = '';
+      document.documentElement.classList.remove('modal-open'); document.body.classList.remove('modal-open');
       
       // Удаляем trap focus при закрытии
       if (removeTrapFocus) {
@@ -399,7 +399,7 @@ function initExitIntent() {
     if (hasShown) return; // Не показываем, если уже показывали
 
     exitIntentModal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
+    document.documentElement.classList.add('modal-open'); document.body.classList.add('modal-open');
     hasShown = true;
     sessionStorage.setItem('exitIntentShown', 'true');
     startCountdown();
@@ -420,7 +420,7 @@ function initExitIntent() {
   // Функция закрытия модального окна
   const closeExitIntentModal = () => {
     exitIntentModal.style.display = 'none';
-    document.body.style.overflow = '';
+    document.documentElement.classList.remove('modal-open'); document.body.classList.remove('modal-open');
 
     // Удаляем trap focus при закрытии
     if (removeTrapFocus) {
@@ -676,7 +676,7 @@ function showErrorModal(message) {
     // Обработчики закрытия
     const closeErrorModal = () => {
       errorModal.style.display = 'none';
-      document.body.style.overflow = '';
+      document.documentElement.classList.remove('modal-open'); document.body.classList.remove('modal-open');
     };
     
     errorModal.querySelector('#closeErrorModal').addEventListener('click', closeErrorModal);
@@ -695,7 +695,7 @@ function showErrorModal(message) {
   // Устанавливаем текст и показываем
   document.getElementById('errorModalText').textContent = message;
   errorModal.style.display = 'block';
-  document.body.style.overflow = 'hidden';
+  document.documentElement.classList.add('modal-open'); document.body.classList.add('modal-open');
   
   // Активируем trap focus
   const removeTrapFocus = trapFocus(errorModal.querySelector('.success-modal__content'));
@@ -932,7 +932,7 @@ function initSuccessModal() {
   // Функция открытия модального окна
   const openSuccessModal = () => {
     successModal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
+    document.documentElement.classList.add('modal-open'); document.body.classList.add('modal-open');
     
     // Активируем trap focus
     const modalContent = successModal.querySelector('.success-modal__content');
@@ -949,7 +949,7 @@ function initSuccessModal() {
   // Функция закрытия модального окна
   const closeModal = () => {
     successModal.style.display = 'none';
-    document.body.style.overflow = '';
+    document.documentElement.classList.remove('modal-open'); document.body.classList.remove('modal-open');
     
     // Удаляем trap focus при закрытии
     if (removeSuccessTrapFocus) {
