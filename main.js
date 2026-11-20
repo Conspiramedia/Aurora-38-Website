@@ -786,6 +786,35 @@ function initSuccessModal() {
 
   // Обработка отправки всех форм
   forms.forEach((form) => {
+    // Антиспам honeypot: добавляем скрытое поле-ловушку с "заманчивым"
+    // для ботов именем. Реальный человек его не видит и не заполняет,
+    // а боты часто автоматически вписывают значение.
+    if (!form.querySelector('.hp-field')) {
+      const trap = document.createElement('input');
+      trap.type = 'text';
+      trap.name = 'website';
+      trap.className = 'hp-field';
+      trap.tabIndex = -1;
+      trap.setAttribute('autocomplete', 'off');
+      trap.setAttribute('aria-hidden', 'true');
+      form.appendChild(trap);
+    }
+
+    // Антиспам (time-trap): засекаем время появления формы.
+    // Боты заполняют и отправляют форму мгновенно — реальному человеку
+    // нужно хотя бы несколько секунд.
+    form._renderTime = Date.now();
+    form._interacted = false;
+    // Фиксируем первое реальное взаимодействие пользователя с формой
+    const markInteraction = () => {
+      if (!form._interacted) {
+        form._interacted = true;
+        form._interactTime = Date.now();
+      }
+    };
+    form.addEventListener('focusin', markInteraction);
+    form.addEventListener('input', markInteraction);
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -793,6 +822,32 @@ function initSuccessModal() {
       const submitButton = form.querySelector('button[type="submit"]');
       if (submitButton) {
         submitButton.disabled = true;
+      }
+
+      // === АНТИСПАМ ===
+      // 1. Honeypot-ловушки: скрытые поля, которые видят только боты.
+      //    Если заполнены — это бот. Тихо "успешно" завершаем без отправки.
+      const traps = form.querySelectorAll('.hp-field');
+      let trapFilled = false;
+      traps.forEach((t) => { if (t.value && t.value.trim() !== '') trapFilled = true; });
+
+      // 2. Time-trap: отправка быстрее 3 секунд с момента появления формы,
+      //    либо вообще без взаимодействия — почти наверняка бот.
+      const elapsed = Date.now() - (form._renderTime || 0);
+      const tooFast = elapsed < 3000;
+      const noInteraction = !form._interacted;
+
+      if (trapFilled || tooFast || noInteraction) {
+        // Имитируем успех, чтобы бот не понял, что отсеян, но НЕ отправляем
+        if (typeof openSuccessModal === 'function') {
+          openSuccessModal();
+        }
+        form.reset();
+        // Сбрасываем таймеры на случай повторной отправки человеком
+        form._renderTime = Date.now();
+        form._interacted = false;
+        if (submitButton) submitButton.disabled = false;
+        return;
       }
 
       // Валидация телефона перед отправкой

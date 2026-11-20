@@ -42,6 +42,18 @@ body.modal-open {
   touch-action: none;
 }
 
+/* Антиспам honeypot: поле-ловушка, скрытое от реальных пользователей */
+.hp-field {
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
 h1,
 h2,
 h3,
