@@ -623,7 +623,7 @@ a.request__button {
 /* Кнопка "Оставить заявку" (основная) */
 .service__button--primary {
   background: #ff8c00;
-  color: #fff;
+  color: #1a1a1a;
   border-color: #ff8c00;
   box-shadow: 0 0 8px rgba(255, 140, 0, 0.4);
 }
@@ -1448,7 +1448,7 @@ a.request__button {
 
 .cta-block__btn--primary {
   background: #ff8c00;
-  color: #fff;
+  color: #1a1a1a;
   border: 1.5px solid #ffffff;
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
@@ -2300,7 +2300,7 @@ a.request__button {
 /* Основная кнопка - "Открыть в Яндекс.Картах" */
 .map__button--primary {
   background: linear-gradient(135deg, #ff8c00 0%, #ffa500 100%);
-  color: white;
+  color: #1a1a1a;
   border: none;
 }
 
@@ -3505,7 +3505,7 @@ a.request__button {
 
 .faq-cta__button--primary {
   background: #ff8c00;
-  color: #fff;
+  color: #1a1a1a;
   border: 1.5px solid #ffffff;
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
@@ -4040,7 +4040,7 @@ a.request__button {
 
 .about-cta__button--primary {
   background: #ff8c00;
-  color: #fff;
+  color: #1a1a1a;
   border: 1.5px solid #ffffff;
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
@@ -4415,7 +4415,7 @@ a.request__button {
 
 .prices-cta__button--primary {
   background: #ff8c00;
-  color: #fff;
+  color: #1a1a1a;
   border: 1.5px solid #ffffff;
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
@@ -6580,7 +6580,7 @@ a.request__button {
 
 .blog-cta__button--primary {
   background: #ff8c00;
-  color: #fff;
+  color: #1a1a1a;
   border: 1.5px solid #ffffff;
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }

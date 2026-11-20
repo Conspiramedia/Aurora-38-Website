@@ -75,7 +75,21 @@ document.addEventListener('DOMContentLoaded', function () {
   initFAQ();
   initReviewsLink();
   initSmoothScroll();
+  initCloseButtonsA11y();
 });
+
+// Доступность: крестики закрытия (span с role="button") должны
+// срабатывать с клавиатуры по Enter/Space, а не только по клику мышью.
+function initCloseButtonsA11y() {
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+    const target = e.target;
+    if (target && target.classList && target.classList.contains('modal__close')) {
+      e.preventDefault();
+      target.click();
+    }
+  });
+}
 
 // =============================================================================
 // ГАЛЕРЕЯ (LIGHTBOX)
